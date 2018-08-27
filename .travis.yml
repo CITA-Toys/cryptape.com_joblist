@@ -1,0 +1,7 @@
+language: python
+python:
+  - '3.6'
+install:
+  - pip install qiniu
+script:
+  - python3 update.py $g_access_key $g_secret_key $g_bucket_name $g_file $g_link

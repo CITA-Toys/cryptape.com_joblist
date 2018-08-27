@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
 import sys
+import os
 import enum
 from qiniu import Auth, put_file, etag
 from qiniu import BucketManager

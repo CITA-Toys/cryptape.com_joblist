@@ -7,7 +7,27 @@ import qiniu.config
 from config import Config
 
 
+# def delete(auth):
+#     from qiniu import Auth
+#     from qiniu import BucketManager
+#     access_key = 'Access_Key'
+#     secret_key = 'Secret_Key'
+#     #初始化Auth状态
+#     q = Auth(access_key, secret_key)
+#     #初始化BucketManager
+#     bucket = BucketManager(q)
+#     #你要测试的空间， 并且这个key在你空间中存在
+#     bucket_name = 'Bucket_Name'
+#     key = 'python-logo.png'
+#     #删除bucket_name 中的文件 key
+#     ret, info = bucket.delete(bucket_name, key)
+#     print(info)
+#     assert ret == {}
+
+
+
 def update(auth):
+    print('刷新')
     cdn_manager = CdnManager(auth)
     # 需要刷新的文件链接
     urls = [
@@ -19,9 +39,10 @@ def update(auth):
 
 
 def upload(auth, **kwargs):
+    print('上传')
     # 生成上传 Token，可以指定过期时间等
     key = Config.file.value
-    token = auth.upload_token(Config.bucket_name, key, 3600)
+    token = auth.upload_token(Config.bucket_name, key, 60)
 
     # 要上传文件的本地路径
     localfile = './jobs.json'
@@ -31,17 +52,20 @@ def upload(auth, **kwargs):
     assert ret['key'] == key
     assert ret['hash'] == etag(localfile)
 
+    update(auth)
 
-# def delete(auth):
-#     #初始化BucketManager
-#     bucket = BucketManager(auth)
 
-#     #删除bucket_name 中的文件 key
-#     ret, info = bucket.delete(Config.bucket_name, Config.file)
-#     print(info)
-#     assert ret == {}
+def delete(auth):
+    print('删除')
+    #初始化BucketManager
+    bucket = BucketManager(auth)
 
-#     update(auth)
+    #删除bucket_name 中的文件 key
+    ret, info = bucket.delete(Config.bucket_name, Config.file)
+    print(info)
+    assert ret == {}
+
+    update(auth)
 
 
 def temp():
@@ -55,12 +79,13 @@ def temp():
 def main():
     # 构建鉴权对象
     auth = Auth(Config.access_key, Config.secret_key)
+    #删除
+    # delete(auth)
     # 上传
     upload(auth)
-    # delete(auth)
 
     # cdn 刷新
-    update(auth)
+    # update(auth)
 
 
 if __name__ == '__main__':

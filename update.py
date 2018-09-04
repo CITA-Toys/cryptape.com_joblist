@@ -53,6 +53,7 @@ def upload(auth, **kwargs):
     assert ret['hash'] == etag(localfile)
 
     update(auth)
+    print('上传成功, 文件地址: {}/{}'.format(Config.link, Config.file))
 
 
 def delete(auth):
